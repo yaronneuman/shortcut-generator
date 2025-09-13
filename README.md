@@ -15,7 +15,8 @@ Analyze your shell history and suggest aliases using a local tiny Ollama model, 
 1) (Optional) Install [Ollama](https://ollama.com/):
 ```bash
 brew install ollama   # macOS (or use your OS package)
-ollama pull phi3:mini
+brew services start ollama
+ollama pull deepseek-r1:8b
 ```
 
 2) Install this package:

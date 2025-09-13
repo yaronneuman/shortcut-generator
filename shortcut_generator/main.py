@@ -91,8 +91,10 @@ def analyze(
         typer.echo(f"\nAliases saved to a temporary file. To apply them later, run:")
         typer.secho(f"  shortcut-generator {tmp_path}", fg=typer.colors.YELLOW)
 
+
 def main():
     app()
+
 
 if __name__ == '__main__':
     main()

@@ -1,13 +1,13 @@
-
 from __future__ import annotations
+
 import os
 import re
 from pathlib import Path
 from typing import Tuple
 
 TRIVIAL_COMMANDS = {
-    "ls","cd","pwd","clear","history","exit","whoami","date","time",
-    "cat","echo","vi","vim","nano","code","open","touch"
+    "ls", "cd", "pwd", "clear", "history", "exit", "whoami", "date", "time",
+    "cat", "echo", "vi", "vim", "nano", "code", "open", "touch"
 }
 
 DANGEROUS_PATTERNS = [
@@ -15,16 +15,20 @@ DANGEROUS_PATTERNS = [
     r":\\s*\\(\\)\\{\\s*:\\s*\\|\\s*:\\s*;\\s*\\}\\s*;\\s*:",  # fork bomb
 ]
 
+
 def detect_shell_and_rc() -> Tuple[str, Path]:
-    shell = os.environ.get("SHELL","").strip()
+    shell = os.environ.get("SHELL", "").strip()
     home = Path.home()
     if shell.endswith("zsh"):
-        return "zsh", home/".zshrc"
+        return "zsh", home / ".zshrc"
     if shell.endswith("bash"):
-        return "bash", home/".bashrc"
-    return "zsh", home/".zshrc"
+        return "bash", home / ".bashrc"
+    return "zsh", home / ".zshrc"
+
 
 def is_trivial(cmd: str) -> bool:
+    if len(cmd) <= 4:
+        return True
     parts = cmd.strip().split()
     if not parts:
         return True
@@ -34,6 +38,7 @@ def is_trivial(cmd: str) -> bool:
         return True
     return False
 
+
 def looks_dangerous(cmd: str) -> bool:
     c = " ".join(cmd.strip().split())
     for pat in DANGEROUS_PATTERNS:
@@ -41,10 +46,12 @@ def looks_dangerous(cmd: str) -> bool:
             return True
     return False
 
+
 def normalize_command(cmd: str) -> str:
-    s = cmd.strip().rstrip(";").replace("\\t"," ")
+    s = cmd.strip().rstrip(";").replace("\\t", " ")
     s = " ".join(s.split())
     return s
+
 
 def safe_alias_name(name: str) -> str:
     name = name.strip().lower()
@@ -53,8 +60,9 @@ def safe_alias_name(name: str) -> str:
         name = "a" + name
     return name[:24]
 
+
 def score_command(cmd: str) -> float:
     length = len(cmd)
     pipes = cmd.count("|")
     opts = len([t for t in cmd.split() if t.startswith("-")])
-    return length*0.6 + pipes*2 + opts*1.2
+    return length * 0.6 + pipes * 2 + opts * 1.2
